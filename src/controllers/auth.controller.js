@@ -2,19 +2,15 @@ import bcrypt from "bcryptjs";
 const { hash, compare } = bcrypt;
 import { User, Token } from "../models/index.js";
 import {
-  errorHelper,
-  ipHelper,
-  signAccessToken,
-  signRefreshToken,
-} from "../utils/index.js";
-import {
   validateRefreshToken,
   validateLogin,
   validateForgotPassword,
 } from "../validators/user.validator.js";
-import { refreshTokenSecretKey } from "../config/index.js";
+import { refreshTokenSecretKey } from "../config/envConfig.js";
 import pkg from "jsonwebtoken";
 import { GLOBAL_CODES } from "../config/globalConfig.js";
+import { errorHelper, ipHelper } from "../helpers/utilityHelper.js";
+import { signAccessToken, signRefreshToken } from "../helpers/jwtHelper.js";
 
 const { verify } = pkg;
 

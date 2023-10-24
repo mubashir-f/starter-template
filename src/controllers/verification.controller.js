@@ -1,22 +1,20 @@
 import { User, Token } from "../models/index.js";
-import ipHelper from "../utils/helpers/ip-helper.js";
-import { jwtSecretKey } from "../config/index.js";
+import { jwtSecretKey } from "../config/envConfig.js";
 import pkg from "jsonwebtoken";
 const { verify } = pkg;
-import {
-  generateRandomCode,
-  sendCodeToEmail,
-  errorHelper,
-  signConfirmCodeToken,
-  signAccessToken,
-  signRefreshToken,
-} from "../utils/index.js";
+import { sendCodeToEmail } from "../helpers/emailHelper.js";
+import { errorHelper, generateRandomCode, ipHelper } from "../utils/helper.js";
 
 import {
   validateSendVerificationCode,
   validateVerifyEmail,
 } from "../validators/user.validator.js";
 import { GLOBAL_CODES } from "../config/globalConfig.js";
+import {
+  signAccessToken,
+  signRefreshToken,
+  signConfirmCodeToken,
+} from "../utils/jwtHelper.js";
 
 const sendVerificationCode = async (req, res) => {
   const { error } = validateSendVerificationCode(req.body);

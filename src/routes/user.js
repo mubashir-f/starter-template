@@ -17,7 +17,7 @@ import {
   sendVerificationCode,
 } from "../controllers/verification.controller.js";
 import { authorizedAccess } from "../middlewares/authorization.js";
-import { imageUpload } from "../middlewares/index.js";
+import { imageUpload } from "../middlewares/multer.js";
 const router = Router();
 // AUTH
 router.post("/", register);

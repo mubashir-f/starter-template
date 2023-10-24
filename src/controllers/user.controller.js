@@ -3,14 +3,10 @@ import {
   validateRegister,
   validateChangePassword,
 } from "../validators/user.validator.js";
-import {
-  generateRandomCode,
-  errorHelper,
-  signConfirmCodeToken,
-} from "../utils/index.js";
 import bcrypt from "bcryptjs";
 import { GLOBAL_CODES } from "../config/globalConfig.js";
-import { getUniqueUserName } from "../utils/helper.js";
+import { getUniqueUserName, errorHelper, generateRandomCode } from "../utils/helper.js";
+import { signConfirmCodeToken } from "../utils/jwtHelper.js";
 
 const { hash } = bcrypt;
 

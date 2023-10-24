@@ -14,8 +14,10 @@ const fileFilter = (_req, file, cb) => {
   }
 };
 
-export default multer({
+const imageUpload = multer({
   storage: storage,
   limits: { fileSize: 2000000 },
   fileFilter: fileFilter,
 }).single("image");
+
+export { imageUpload };

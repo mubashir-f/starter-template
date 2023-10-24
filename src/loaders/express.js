@@ -3,26 +3,25 @@ import cors from "cors";
 import compression from "compression";
 import morgan from "morgan";
 import helmet from "helmet";
-import { prefix } from "./../config/index.js";
+import { prefix } from "../config/envConfig.js";
 import routes from "../routes/index.js";
-import { logger } from "../utils/index.js";
-import { rateLimiter } from "../middlewares/index.js";
-import { jwtSecretKey } from "../config/index.js";
+import { jwtSecretKey } from "../config/envConfig.js";
 import bodyParser from "body-parser";
-
+import { logHelper } from "../utils/helper.js";
+import { mongoRateLimiter } from "../middlewares/rateLimiter.js";
 export default (app) => {
   process.on("uncaughtException", async (error) => {
     console.log(error);
-    logger("00001", "", error.message, "Uncaught Exception", "");
+    logHelper("00001", "", error.message, "Uncaught Exception", "");
   });
 
   process.on("unhandledRejection", async (error) => {
     console.log(error);
-    logger("00002", "", error.message, "Unhandled Rejection", "");
+    logHelper("00002", "", error.message, "Unhandled Rejection", "");
   });
 
   if (!jwtSecretKey) {
-    logger("00003", "", "Jwt private key is not defined", "Process-Env", "");
+    logHelper("00003", "", "Jwt private key is not defined", "Process-Env", "");
     process.exit(1);
   }
 
@@ -48,7 +47,7 @@ export default (app) => {
   app.disable("x-powered-by");
   app.disable("etag");
 
-  app.use(rateLimiter);
+  app.use(mongoRateLimiter);
   app.use(prefix, routes);
 
   app.get("/", (_req, res) => {
@@ -92,7 +91,7 @@ export default (app) => {
       resultCode = "00014";
       level = "Client Error";
     }
-    logger(resultCode, req?.user?._id ?? "", error.message, level, req);
+    logHelper(resultCode, req?.user?._id ?? "", error.message, level, req);
     return res.json({
       resultMessage: error.message,
       resultCode: resultCode,

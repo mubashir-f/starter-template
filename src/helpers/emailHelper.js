@@ -1,11 +1,11 @@
 import { createTransport } from "nodemailer";
-import errorHelper from "./helpers/error-helper.js";
+import { errorHelper } from "./utilityHelper.js";
 
 import {
   awsAccessKey,
   awsSecretAccessKey,
   awsRegion,
-} from "../config/index.js";
+} from "../config/envConfig.js";
 import pkg from "aws-sdk";
 import { GLOBAL_CODES } from "../config/globalConfig.js";
 
@@ -17,7 +17,7 @@ config.update({
   region: awsRegion,
 });
 
-export default async (email, name, confirmCode, type, req, res) => {
+const sendCodeToEmail = async (email, name, confirmCode, type, req, res) => {
   new Promise(async (resolve, reject) => {
     if (!email || !confirmCode) {
       return res.status(400).send(errorHelper("00005", req)).end();
@@ -52,3 +52,5 @@ export default async (email, name, confirmCode, type, req, res) => {
     }
   });
 };
+
+export { sendCodeToEmail };
