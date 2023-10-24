@@ -42,9 +42,9 @@ const forgotPassword = async (req, res) => {
 const login = async (req, res) => {
   const { error } = validateLogin(req.body);
   if (error) {
-    let code = "00038";
-    if (error.details[0].message.includes("email")) code = "00039";
-    else if (error.details[0].message.includes("password")) code = "00040";
+    let code = "00025";
+    if (error.details[0].message.includes("email")) code = "00026";
+    else if (error.details[0].message.includes("password")) code = "00027";
 
     return res
       .status(400)
@@ -61,7 +61,7 @@ const login = async (req, res) => {
       return res.status(500).json(errorHelper("serverError", req, err.message));
     });
 
-  if (!user) return res.status(404).json(errorHelper("00042", req));
+  if (!user) return res.status(404).json(errorHelper("00036", req));
 
   if (!user.isActivated) return res.status(400).json(errorHelper("00043", req));
 

@@ -5,10 +5,9 @@ export function validateRegister(body) {
     email: Joi.string().email().min(3).required(),
     password: Joi.string().min(6).max(20).required(),
     name: Joi.string().min(3).max(24).required(),
-    type: Joi.string().valid("admin", "client", "lawyer").required(),
+    type: Joi.string().valid("admin", "client", "user").required(),
     gender: Joi.string().valid("male", "female").required(),
     city: Joi.string().required(),
-    lawyerId: Joi.string(),
     courtName: Joi.string(),
   });
   return schema.validate(body);

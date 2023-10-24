@@ -23,7 +23,7 @@ const sendVerificationCode = async (req, res) => {
   if (error)
     return res
       .status(400)
-      .json(errorHelper("00029", req, error.details[0].message));
+      .json(errorHelper("00026", req, error.details[0].message));
 
   const user = await User.findOne({
     email: req.body.email,
@@ -123,7 +123,7 @@ const sendVerificationEmail = async (req, res) => {
   if (error)
     return res
       .status(400)
-      .json(errorHelper("00029", req, error.details[0].message));
+      .json(errorHelper("00026", req, error.details[0].message));
 
   const user = await User.findOne({
     email: req.body.email,

@@ -64,7 +64,7 @@ const checkCreator = async (req, res, next) => {
     });
 
   if (user.type !== "creator" && user.type !== "admin")
-    return res.status(403).json(errorHelper("00019", req));
+    return res.status(403).json(errorHelper("00017", req));
 
   next();
 };
@@ -77,7 +77,7 @@ const checkReader = async (req, res, next) => {
     });
 
   if (user.type === "user")
-    return res.status(403).json(errorHelper("00021", req));
+    return res.status(403).json(errorHelper("00017", req));
 
   next();
 };

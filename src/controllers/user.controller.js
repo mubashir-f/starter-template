@@ -10,6 +10,8 @@ import {
 } from "../utils/index.js";
 import bcrypt from "bcryptjs";
 import { GLOBAL_CODES } from "../config/globalConfig.js";
+import { getUniqueUserName } from "../utils/helper.js";
+
 const { hash } = bcrypt;
 
 const register = async (req, res) => {
@@ -18,7 +20,7 @@ const register = async (req, res) => {
     let code = "00025";
     if (error.details[0].message.includes("email")) code = "00026";
     else if (error.details[0].message.includes("password")) code = "00027";
-    else if (error.details[0].message.includes("name")) code = "00028";
+    else if (error.details[0].message.includes("name")) code = "00077";
     return res
       .status(400)
       .json(errorHelper(code, req, error.details[0].message));
@@ -33,24 +35,8 @@ const register = async (req, res) => {
   const hashed = await hash(req.body.password, 10);
 
   const emailCode = generateRandomCode(4);
-
-  let username = "";
-  let tempName = "";
-  let existsUsername = true;
   let name = req.body.name;
-  if (name.includes(" ")) {
-    tempName = name.trim().split(" ").slice(0, 1).join("").toLowerCase();
-  } else {
-    tempName = name.toLowerCase().trim();
-  }
-  do {
-    username = tempName + generateRandomCode(4);
-    existsUsername = await User.exists({ username: username }).catch((err) => {
-      return res.status(500).json(errorHelper("serverError", req, err.message));
-    });
-  } while (existsUsername);
-
-  // const geo = lookup(ipHelper(req));
+  let username = await getUniqueUserName(name, req, res);
   const url = req.protocol + "://" + req.get("host");
 
   let user = new User({
@@ -61,7 +47,6 @@ const register = async (req, res) => {
     photoUrl: `${url}/images/avatar.png`,
     gender: req.body.gender,
     courtName: req.body.courtName,
-    lawyerId: req.body.lawyerId,
     city: req.body.city,
     isVerified: true,
     type: req.body.type,
@@ -132,7 +117,7 @@ const changePassword = async (req, res) => {
   if (error)
     return res
       .status(400)
-      .json(errorHelper("00069", req, error.details[0].message));
+      .json(errorHelper("00027", req, error.details[0].message));
 
   if (req.body.oldPassword === req.body.newPassword)
     return res.status(400).json(errorHelper("00073", req));

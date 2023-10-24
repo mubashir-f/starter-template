@@ -1,37 +1,28 @@
 export default {
-  serverError: "Internal Sever Error",
+  serverError: {
+    message: "An internal server error occurred, please try again.",
+    code: "00001",
+  },
   verificationCodeTitle: "Verification Code",
   verificationCodeBody: "Here is your confirm code:",
   welcomeCode: "Welcome to the App",
   "00005": "Please provide all information to send a code.",
   "00006": "Access denied. No token provided.",
   "00007": "Invalid user id.",
-  "00008": "An internal server error occurred, please try again.",
   "00009":
     "Could not find verified user with the given token and id. Be sure that the account was verified and activated.",
   "00011": "Your session is expired, please log in again.",
   "00012": "Invalid token. the token may have expired.",
   "00017": "Access denied. You do not have permission to access.",
-  "00019": "Access denied. You do not have permission to access.",
-  "00021": "Access denied. You do not have permission to access.",
-  "00022": "No id provided in params. Please enter an id.",
   "00023": "Provided id is not a valid object id.",
   "00024": "Too many request.",
   "00025": "Please provide all the required fields!",
   "00026": "Please provide a valid email!",
   "00027":
     "Please provide a password that is longer than 6 letters and shorter than 20 letters.",
-  "00028":
-    "Please provide a name that is longer than 3 letters and shorter than 30 letters.",
-  "00029": "Please provide a valid email!",
   "00032": "An account with this email address already exists.",
   "00035": "New user registered successfully.",
   "00036": "An account with this email address was not found.",
-  "00038": "Please provide all the required fields!",
-  "00039": "Please provide a valid email!",
-  "00040":
-    "Please provide a password that is longer than 6 letters and shorter than 20 letters.",
-  "00042": "An account with this email address was not found.",
   "00043": "Your email is not activated, please register firstly.",
   "00044": "Your email is not verified, please verify your email.",
   "00045": "You have entered an invalid email or password.",
@@ -51,8 +42,6 @@ export default {
   "00065": "The token is refreshed successfully.",
   "00066": "Please provide a password longer than 6, less than 20 characters.",
   "00068": "The new password was created successfully.",
-  "00069":
-    "Please provide old and new passwords that are longer than 6 letters and shorter than 20 letters.",
   "00072":
     "Your old password does not match with the password you entered, please enter the correct password.",
   "00073":
@@ -60,14 +49,8 @@ export default {
   "00076": "Your password was changed successfully.",
   "00077":
     "Please provide a name that is longer than 3 letters and shorter than 30 letters.",
-  "00078":
-    "Valid gender options: female-male-other, please provide one of them.",
-  "00080": "Please provide a valid birth date.",
-  "00081":
-    "Please provide a username that is longer than 3 letters and shorter than 15 letters.",
   "00084": "There is already a user with this username, please enter another.",
   "00086": "Your profile information was changed successfully.",
   "00089": "The user information has gotten successfully.",
   "00092": "Your account was deleted successfully.",
-  "00093": "Profile Updated successfully",
 };
