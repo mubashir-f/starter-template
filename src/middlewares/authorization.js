@@ -3,7 +3,7 @@ import { jwtSecretKey } from "../config/envConfig.js";
 import pkg from "mongoose";
 const { Types } = pkg;
 import jwt from "jsonwebtoken";
-import { errorHelper } from "../utils/helper.js";
+import { errorHelper } from "../helpers/utilityHelper.js";
 const { verify } = jwt;
 
 const authorizedAccess = async (req, res, next) => {

@@ -5,8 +5,8 @@ import {
 } from "../validators/user.validator.js";
 import bcrypt from "bcryptjs";
 import { GLOBAL_CODES } from "../config/globalConfig.js";
-import { getUniqueUserName, errorHelper, generateRandomCode } from "../utils/helper.js";
-import { signConfirmCodeToken } from "../utils/jwtHelper.js";
+import { errorHelper, generateRandomCode, getUniqueUserName } from "../helpers/utilityHelper.js";
+import { signConfirmCodeToken } from "../helpers/jwtHelper.js";
 
 const { hash } = bcrypt;
 

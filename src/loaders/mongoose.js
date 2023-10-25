@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { dbUri } from '../config/index.js';
+import { dbUri } from '../config/envConfig.js';
 
 export default async () => {
   mongoose.set("strictQuery", false);

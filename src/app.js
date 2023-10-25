@@ -1,7 +1,7 @@
 import express from "express";
 import { createServer } from "http";
-import { port, serverIP } from "./config/index.js";
 import loader from "./loaders/index.js";
+import { port, serverIP } from "./config/envConfig.js";
 
 const app = express();
 loader(app);

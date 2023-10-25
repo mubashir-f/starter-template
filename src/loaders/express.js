@@ -3,12 +3,11 @@ import cors from "cors";
 import compression from "compression";
 import morgan from "morgan";
 import helmet from "helmet";
-import { prefix } from "../config/envConfig.js";
+import { jwtSecretKey, prefix } from "../config/envConfig.js";
 import routes from "../routes/index.js";
-import { jwtSecretKey } from "../config/envConfig.js";
 import bodyParser from "body-parser";
-import { logHelper } from "../utils/helper.js";
 import { mongoRateLimiter } from "../middlewares/rateLimiter.js";
+import { logHelper } from "../helpers/utilityHelper.js";
 export default (app) => {
   process.on("uncaughtException", async (error) => {
     console.log(error);

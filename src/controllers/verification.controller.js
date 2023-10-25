@@ -3,18 +3,21 @@ import { jwtSecretKey } from "../config/envConfig.js";
 import pkg from "jsonwebtoken";
 const { verify } = pkg;
 import { sendCodeToEmail } from "../helpers/emailHelper.js";
-import { errorHelper, generateRandomCode, ipHelper } from "../utils/helper.js";
-
 import {
   validateSendVerificationCode,
   validateVerifyEmail,
 } from "../validators/user.validator.js";
 import { GLOBAL_CODES } from "../config/globalConfig.js";
 import {
+  errorHelper,
+  generateRandomCode,
+  ipHelper,
+} from "../helpers/utilityHelper.js";
+import {
   signAccessToken,
   signRefreshToken,
   signConfirmCodeToken,
-} from "../utils/jwtHelper.js";
+} from "../helpers/jwtHelper.js";
 
 const sendVerificationCode = async (req, res) => {
   const { error } = validateSendVerificationCode(req.body);
