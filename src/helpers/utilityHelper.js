@@ -1,45 +1,51 @@
-import { User } from "../models/index.js";
+import { UserModel } from "../models/index.js";
 import { generate } from "randomstring";
-import { Log } from "../models/index.js";
+import { LogModel } from "../models/index.js";
 
 const ipHelper = (req) =>
   req.headers["x-forwarded-for"]
     ? req.headers["x-forwarded-for"].split(/, /)[0]
     : req.connection.remoteAddress;
 
-const logHelper = async (code, userId, errorMessage, level, req) => {
+const logHelper = async (logData, userId, level, req) => {
   let ip = "no-ip";
   if (req !== "") ip = ipHelper(req);
-  let log = new Log({
-    resultCode: code,
+  const global_log = {
+    resultCode: logData.resultCode,
     level: level,
-    errorMessage: errorMessage,
+    errorMessage: logData.resultMessage,
     ip: ip,
-  });
-
-  if (userId !== "" && userId) log.userId = userId;
-
-  await log.save().catch((err) => {
+  };
+  console.log("@global_logs:", global_log);
+  let logObject = new LogModel(global_log);
+  if (userId !== "" && userId) logObject.userId = userId;
+  await logObject.save().catch((err) => {
     console.log("Logging is failed: " + err);
   });
 };
 
 const generateRandomCode = (length) => generate({ length, charset: "numeric" });
 
-const errorHelper = async (code, req, errorMessage) => {
+const serverErrorHelper = async (req, error) => {
   let userId = "";
   if (req && req.user && req.user._id) userId = req.user._id;
+  logHelper(
+    {
+      resultMessage: error,
+      resultCode: "00004",
+    },
+    userId,
+    "Server Error",
+    req
+  );
+  return error;
+};
 
-  if (errorMessage.includes("server error")) {
-    logHelper(code, userId, errorMessage, "Server Error", req);
-  } else {
-    logHelper(code, userId, errorMessage, "Client Error", req);
-  }
-
-  return {
-    resultMessage: errorMessage,
-    resultCode: code,
-  };
+const errorHelper = async (errorData, level = "", req) => {
+  let userId = "";
+  if (req && req.user && req.user._id) userId = req.user._id;
+  logHelper(errorData, userId, level, req);
+  return errorData;
 };
 
 const getUniqueUserName = async (name, req, res) => {
@@ -52,11 +58,9 @@ const getUniqueUserName = async (name, req, res) => {
   }
   do {
     username = tempName + generateRandomCode(4);
-    let existsUsername = await User.exists({ username: username }).catch(
+    let existsUsername = await UserModel.exists({ username: username }).catch(
       (err) => {
-        return res
-          .status(500)
-          .json(errorHelper("serverError", req, err.message));
+        return res.status(500).json(serverErrorHelper(req, err.message));
       }
     );
     if (!existsUsername) return username;
@@ -65,8 +69,9 @@ const getUniqueUserName = async (name, req, res) => {
 };
 
 export {
-  getUniqueUserName,
+  serverErrorHelper,
   errorHelper,
+  getUniqueUserName,
   generateRandomCode,
   logHelper,
   ipHelper,

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { RateLimiterMongo } from "rate-limiter-flexible";
 import { dbUri } from "../config/envConfig.js";
-import { errorHelper } from "../helpers/utilityHelper.js";
+import { GLOBAL_MESSAGES } from "../config/globalConfig.js";
 
 mongoose.set("strictQuery", false);
 const mongoConn = mongoose.createConnection(dbUri, {});
@@ -21,7 +21,14 @@ const mongoRateLimiter = (req, res, next) => {
       next();
     })
     .catch((err) => {
-      return res.status(429).json(errorHelper("00024", req, err.message));
+      return res.status(429).json(
+        {
+          ...GLOBAL_MESSAGES.rateLimitError,
+          resultMessage: err.details[0].message,
+        },
+        "Server Error",
+        req
+      );
     });
 };
 

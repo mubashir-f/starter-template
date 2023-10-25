@@ -1,10 +1,9 @@
-import { User } from "../models/index.js";
-import ApiError from "../utils/APIError.js";
+import { UserModel } from "../models/index.js";
 
 const createNewUser = async (req, res) => {
-  const user = await User.findById(userId);
-  if (!user) throw new ApiError("Invaid User Id");
+  const user = await UserModel.findById(userId);
+  if (!user) throw new ApiError("Invaid UserModel Id");
   return user;
 };
 
-export { getUserFromId };
+export { createNewUser };

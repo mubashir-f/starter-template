@@ -1,3 +1,3 @@
-import GLOBAL_CODES from "./global-codes.js";
+import GLOBAL_MESSAGES from "./global-messages.js";
 
-export { GLOBAL_CODES };
+export { GLOBAL_MESSAGES };

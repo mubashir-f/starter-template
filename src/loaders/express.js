@@ -3,26 +3,23 @@ import cors from "cors";
 import compression from "compression";
 import morgan from "morgan";
 import helmet from "helmet";
-import { jwtSecretKey, prefix } from "../config/envConfig.js";
+import { prefix } from "../config/envConfig.js";
 import routes from "../routes/index.js";
 import bodyParser from "body-parser";
 import { mongoRateLimiter } from "../middlewares/rateLimiter.js";
 import { logHelper } from "../helpers/utilityHelper.js";
+import { GLOBAL_MESSAGES } from "../config/globalConfig.js";
+
 export default (app) => {
   process.on("uncaughtException", async (error) => {
     console.log(error);
-    logHelper("00001", "", error.message, "Uncaught Exception", "");
+    logHelper(GLOBAL_MESSAGES.uncaughtException, "", "Server", "");
   });
 
   process.on("unhandledRejection", async (error) => {
     console.log(error);
-    logHelper("00002", "", error.message, "Unhandled Rejection", "");
+    logHelper(GLOBAL_MESSAGES.unhandledRejection, "", "Server", "");
   });
-
-  if (!jwtSecretKey) {
-    logHelper("00003", "", "Jwt private key is not defined", "Process-Env", "");
-    process.exit(1);
-  }
 
   app.enable("trust proxy");
   app.use(cors());
@@ -50,13 +47,7 @@ export default (app) => {
   app.use(prefix, routes);
 
   app.get("/", (_req, res) => {
-    return res
-      .status(200)
-      .json({
-        resultMessage: "Project is successfully working...",
-        resultCode: "00004",
-      })
-      .end();
+    return res.status(200).json(GLOBAL_MESSAGES.serverStatus).end();
   });
 
   app.use((req, res, next) => {
@@ -81,19 +72,16 @@ export default (app) => {
 
   app.use((error, req, res, _next) => {
     res.status(error.status || 500);
-    let resultCode = "00015";
+    let resError = GLOBAL_MESSAGES.serverError;
     let level = "External Error";
     if (error.status === 500) {
-      resultCode = "00013";
+      resError = GLOBAL_MESSAGES.serverError;
       level = "Server Error";
     } else if (error.status === 404) {
-      resultCode = "00014";
+      resError = GLOBAL_MESSAGES.clientError;
       level = "Client Error";
     }
-    logHelper(resultCode, req?.user?._id ?? "", error.message, level, req);
-    return res.json({
-      resultMessage: error.message,
-      resultCode: resultCode,
-    });
+    logHelper(resError, "", level, req);
+    return res.json(resError);
   });
 };

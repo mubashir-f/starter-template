@@ -1,4 +1,4 @@
-import { User, Token } from "../models/index.js";
+import { UserModel, TokenModel } from "../models/index.js";
 import { jwtSecretKey } from "../config/envConfig.js";
 import pkg from "jsonwebtoken";
 const { verify } = pkg;
@@ -7,11 +7,12 @@ import {
   validateSendVerificationCode,
   validateVerifyEmail,
 } from "../validators/user.validator.js";
-import { GLOBAL_CODES } from "../config/globalConfig.js";
+import { GLOBAL_MESSAGES } from "../config/globalConfig.js";
 import {
   errorHelper,
   generateRandomCode,
   ipHelper,
+  serverErrorHelper,
 } from "../helpers/utilityHelper.js";
 import {
   signAccessToken,
@@ -22,18 +23,19 @@ import {
 const sendVerificationCode = async (req, res) => {
   const { error } = validateSendVerificationCode(req.body);
   if (error)
-    return res
-      .status(400)
-      .json(errorHelper("00026", req, error.details[0].message));
+    return res.status(400).json({
+      ...GLOBAL_MESSAGES.invalidRequest,
+      resultMessage: error.details[0].message,
+    });
 
-  const user = await User.findOne({
+  const user = await UserModel.findOne({
     email: req.body.email,
     isActivated: true,
   }).catch((err) => {
-    return res.status(500).json(errorHelper("serverError", req, err.message));
+    return res.status(500).json(serverErrorHelper(req, err.message));
   });
 
-  if (!user) return res.status(404).json(errorHelper("00036", req));
+  if (!user) return res.status(404).json(GLOBAL_MESSAGES.emailNotFound);
 
   const emailCode = generateRandomCode(4);
   await sendCodeToEmail(
@@ -48,13 +50,12 @@ const sendVerificationCode = async (req, res) => {
   user.isVerified = false;
 
   await user.save().catch((err) => {
-    return res.status(500).json(errorHelper("serverError", req, err.message));
+    return res.status(500).json(serverErrorHelper(req, err.message));
   });
 
   const confirmCodeToken = signConfirmCodeToken(user._id, emailCode);
   return res.status(200).json({
-    resultMessage: GLOBAL_CODES["00048"],
-    resultCode: "00048",
+    ...GLOBAL_MESSAGES.readSuccess,
     confirmToken: confirmCodeToken,
   });
 };
@@ -62,38 +63,47 @@ const sendVerificationCode = async (req, res) => {
 const verifyEmail = async (req, res) => {
   const { error } = validateVerifyEmail(req.body);
   if (error)
-    return res
-      .status(400)
-      .json(errorHelper("00053", req, error.details[0].message));
+    return res.status(400).json({
+      ...GLOBAL_MESSAGES.invalidRequest,
+      resultMessage: error.details[0].message,
+    });
 
   try {
     req.user = verify(req.body.token, jwtSecretKey);
   } catch (err) {
-    return res.status(400).json(errorHelper("00055", req, err.message));
+    return res
+      .status(400)
+      .json(
+        errorHelper(
+          { ...GLOBAL_MESSAGES.invalidJWT, resultMessage: err.message },
+          "Client Error",
+          req
+        )
+      );
   }
 
-  const exists = await User.exists({
+  const exists = await UserModel.exists({
     _id: req.user._id,
     isActivated: true,
   }).catch((err) => {
-    return res.status(500).json(errorHelper("serverError", req, err.message));
+    return res.status(500).json(serverErrorHelper(req, err.message));
   });
 
-  if (!exists) return res.status(400).json(errorHelper("00052", req));
+  if (!exists) return res.status(400).json(GLOBAL_MESSAGES.dataNotFound);
 
   if (req.body.code !== req.user.code)
-    return res.status(400).json(errorHelper("00054", req));
+    return res.status(400).json(GLOBAL_MESSAGES.invalidCode);
 
-  await User.updateOne(
+  await UserModel.updateOne(
     { _id: req.user._id },
     { $set: { isVerified: true } }
   ).catch((err) => {
-    return res.status(500).json(errorHelper("serverError", req, err.message));
+    return res.status(500).json(serverErrorHelper(req, err.message));
   });
 
   const accessToken = signAccessToken(req.user._id);
   const refreshToken = signRefreshToken(req.user._id);
-  await Token.updateOne(
+  await TokenModel.updateOne(
     { userId: req.user._id },
     {
       $set: {
@@ -109,11 +119,10 @@ const verifyEmail = async (req, res) => {
       upsert: true,
     }
   ).catch((err) => {
-    return res.status(500).json(errorHelper("serverError", req, err.message));
+    return res.status(500).json(serverErrorHelper(req, err.message));
   });
   return res.status(200).json({
-    resultMessage: GLOBAL_CODES["00058"],
-    resultCode: "00058",
+    ...GLOBAL_MESSAGES.readSuccess,
     accessToken,
     refreshToken,
   });
@@ -122,18 +131,19 @@ const verifyEmail = async (req, res) => {
 const sendVerificationEmail = async (req, res) => {
   const { error } = validateSendVerificationCode(req.body);
   if (error)
-    return res
-      .status(400)
-      .json(errorHelper("00026", req, error.details[0].message));
+    return res.status(400).json({
+      ...GLOBAL_MESSAGES.invalidRequest,
+      resultMessage: error.details[0].message,
+    });
 
-  const user = await User.findOne({
+  const user = await UserModel.findOne({
     email: req.body.email,
     isActivated: true,
   }).catch((err) => {
-    return res.status(500).json(errorHelper("serverError", req, err.message));
+    return res.status(500).json(serverErrorHelper(req, err.message));
   });
 
-  if (!user) return res.status(404).json(errorHelper("00036", req));
+  if (!user) return res.status(404).json(GLOBAL_MESSAGES.emailNotFound);
 
   const emailCode = generateRandomCode(4);
   await sendCodeToEmail(
@@ -148,13 +158,12 @@ const sendVerificationEmail = async (req, res) => {
   user.isVerified = false;
 
   await user.save().catch((err) => {
-    return res.status(500).json(errorHelper("serverError", req, err.message));
+    return res.status(500).json(serverErrorHelper(req, err.message));
   });
 
   const confirmCodeToken = signConfirmCodeToken(user._id, emailCode);
   return res.status(200).json({
-    resultMessage: GLOBAL_CODES["00048"],
-    resultCode: "00048",
+    ...GLOBAL_MESSAGES.readSuccess,
     confirmToken: confirmCodeToken,
   });
 };
