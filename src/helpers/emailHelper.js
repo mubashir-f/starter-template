@@ -1,19 +1,13 @@
 import { createTransport } from "nodemailer";
-
-import {
-  awsAccessKey,
-  awsSecretAccessKey,
-  awsRegion,
-} from "../config/envConfig.js";
 import pkg from "aws-sdk";
-import { GLOBAL_MESSAGES } from "../config/globalConfig.js";
+import { GLOBAL_MESSAGES, GLOBAL_ENV } from "../config/globalConfig.js";
 
 const { config, SES } = pkg;
 
 config.update({
-  accessKeyId: awsAccessKey,
-  secretAccessKey: awsSecretAccessKey,
-  region: awsRegion,
+  accessKeyId: GLOBAL_ENV.awsAccessKey,
+  secretAccessKey: GLOBAL_ENV.awsSecretAccessKey,
+  region: GLOBAL_ENV.awsRegion,
 });
 
 const sendCodeToEmail = async (email, name, confirmCode, type, req, res) => {

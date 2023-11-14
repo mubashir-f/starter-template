@@ -14,9 +14,9 @@ const router = Router();
 
 router.post("/login", login);
 router.post("/logout", authorizedAccess, logout);
-router.post("/refresh-token", refreshToken);
-router.post("/forgot-password", authorizedAccess, forgotPassword);
 router.post("/verify-email", verifyEmail);
 router.post("/send-verification-code", sendVerificationCode);
+router.post("/refresh-token", refreshToken);
+router.post("/forgot-password", authorizedAccess, forgotPassword);
 
 export default router;

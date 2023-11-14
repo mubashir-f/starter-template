@@ -1,10 +1,9 @@
 import { UserModel, TokenModel } from "../models/index.js";
-import { jwtSecretKey } from "../config/envConfig.js";
 import pkg from "mongoose";
 const { Types } = pkg;
 import jwt from "jsonwebtoken";
 import { errorHelper, serverErrorHelper } from "../helpers/utilityHelper.js";
-import { GLOBAL_MESSAGES } from "../config/globalConfig.js";
+import { GLOBAL_MESSAGES,GLOBAL_ENV } from "../config/globalConfig.js";
 
 const { verify } = jwt;
 
@@ -16,14 +15,13 @@ const authorizedAccess = async (req, res, next) => {
     token = req.header("Authorization").replace("Bearer ", "");
 
   try {
-    req.user = verify(token, jwtSecretKey);
+    req.user = verify(token, GLOBAL_ENV.jwtSecretKey);
     if (!Types.ObjectId.isValid(req.user._id))
       return res.status(400).json(GLOBAL_MESSAGES.invalidData);
 
     const exists = await UserModel.exists({
       _id: req.user._id,
       isVerified: true,
-      isActivated: true,
     }).catch((err) => {
       return res.status(500).json(serverErrorHelper(req, err.message));
     });

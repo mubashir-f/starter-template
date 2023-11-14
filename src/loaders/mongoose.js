@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import { dbUri } from "../config/envConfig.js";
+import { GLOBAL_ENV } from "../config/globalConfig.js";
 
 export default async () => {
   mongoose.set("strictQuery", false);
   await mongoose
-    .connect(dbUri, {})
+    .connect(GLOBAL_ENV.dbUri, {})
     .then(() => {
       console.log("Mongodb Connection Success.");
     })

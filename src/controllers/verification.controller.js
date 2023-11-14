@@ -1,5 +1,4 @@
 import { UserModel, TokenModel } from "../models/index.js";
-import { jwtSecretKey } from "../config/envConfig.js";
 import pkg from "jsonwebtoken";
 const { verify } = pkg;
 import { sendCodeToEmail } from "../helpers/emailHelper.js";
@@ -30,7 +29,6 @@ const sendVerificationCode = async (req, res) => {
 
   const user = await UserModel.findOne({
     email: req.body.email,
-    isActivated: true,
   }).catch((err) => {
     return res.status(500).json(serverErrorHelper(req, err.message));
   });
@@ -69,7 +67,7 @@ const verifyEmail = async (req, res) => {
     });
 
   try {
-    req.user = verify(req.body.token, jwtSecretKey);
+    req.user = verify(req.body.token, GLOBAL_ENV.jwtSecretKey);
   } catch (err) {
     return res
       .status(400)
@@ -84,7 +82,6 @@ const verifyEmail = async (req, res) => {
 
   const exists = await UserModel.exists({
     _id: req.user._id,
-    isActivated: true,
   }).catch((err) => {
     return res.status(500).json(serverErrorHelper(req, err.message));
   });
@@ -138,7 +135,6 @@ const sendVerificationEmail = async (req, res) => {
 
   const user = await UserModel.findOne({
     email: req.body.email,
-    isActivated: true,
   }).catch((err) => {
     return res.status(500).json(serverErrorHelper(req, err.message));
   });

@@ -6,17 +6,15 @@ import {
   validateLogin,
   validateForgotPassword,
 } from "../validators/user.validator.js";
-import { refreshTokenSecretKey } from "../config/envConfig.js";
 import pkg from "jsonwebtoken";
-import { GLOBAL_MESSAGES } from "../config/globalConfig.js";
+const { verify } = pkg;
+import { GLOBAL_MESSAGES, GLOBAL_ENV } from "../config/globalConfig.js";
 import {
   serverErrorHelper,
   ipHelper,
   errorHelper,
 } from "../helpers/utilityHelper.js";
 import { signAccessToken, signRefreshToken } from "../helpers/jwtHelper.js";
-
-const { verify } = pkg;
 
 const forgotPassword = async (req, res) => {
   const { error } = validateForgotPassword(req.body);
@@ -29,7 +27,7 @@ const forgotPassword = async (req, res) => {
   const hashed = await hash(req.body.password, 10);
 
   await UserModel.updateOne(
-    { _id: req.user._id, isVerified: true, isActivated: true },
+    { _id: req.user._id, isVerified: true },
     { $set: { password: hashed } }
   ).catch((err) => {
     return res.status(500).json(serverErrorHelper(req, err.message));
@@ -48,7 +46,6 @@ const login = async (req, res) => {
 
   const user = await UserModel.findOne({
     email: req.body.email,
-    isActivated: true,
     isVerified: true,
   })
     .select("+password")
@@ -57,9 +54,6 @@ const login = async (req, res) => {
     });
 
   if (!user) return res.status(404).json(GLOBAL_MESSAGES.emailNotFound);
-
-  if (!user.isActivated)
-    return res.status(400).json(GLOBAL_MESSAGES.accountNotActivated);
 
   if (!user.isVerified)
     return res.status(400).json(GLOBAL_MESSAGES.accountNotVerified);
@@ -127,7 +121,7 @@ const refreshToken = async (req, res) => {
     });
 
   try {
-    req.user = verify(req.body.refreshToken, refreshTokenSecretKey);
+    req.user = verify(req.body.refreshToken, GLOBAL_ENV.refreshTokenSecretKey);
   } catch (err) {
     return res
       .status(400)

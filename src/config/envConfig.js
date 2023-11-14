@@ -13,13 +13,24 @@ const {
   BUCKET_NAME,
 } = process.env;
 
-export const serverIP = SERVER_IP || "http://127.0.0.1";
-export const port = PORT || 8000;
-export const jwtSecretKey = JWT_SECRET_KEY;
-export const refreshTokenSecretKey = REFRESH_TOKEN_SECRET_KEY;
-export const dbUri = DB_URI;
-export const awsAccessKey = AWS_ACCESS_KEY_ID;
-export const awsSecretAccessKey = AWS_SECRET_ACCESS_KEY;
-export const awsRegion = AWS_REGION;
-export const bucketName = BUCKET_NAME;
-export const prefix = "/api";
+const serverIP = SERVER_IP || "http://127.0.0.1";
+const port = PORT || 8000;
+const jwtSecretKey = JWT_SECRET_KEY;
+const refreshTokenSecretKey = REFRESH_TOKEN_SECRET_KEY;
+const dbUri = DB_URI;
+const awsAccessKey = AWS_ACCESS_KEY_ID;
+const awsSecretAccessKey = AWS_SECRET_ACCESS_KEY;
+const awsRegion = AWS_REGION;
+const bucketName = BUCKET_NAME;
+
+export default {
+  serverIP,
+  port,
+  jwtSecretKey,
+  refreshTokenSecretKey,
+  dbUri,
+  awsAccessKey,
+  awsSecretAccessKey,
+  awsRegion,
+  bucketName,
+};

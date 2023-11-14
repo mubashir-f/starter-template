@@ -78,7 +78,6 @@ const deleteUser = async (req, res) => {
         password: hashed,
         photoUrl:
           "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Node.js_logo.svg/1200px-Node.js_logo.svg.png",
-        isActivated: false,
         deletedAt: Date.now(),
       },
     }

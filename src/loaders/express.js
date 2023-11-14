@@ -3,12 +3,11 @@ import cors from "cors";
 import compression from "compression";
 import morgan from "morgan";
 import helmet from "helmet";
-import { prefix } from "../config/envConfig.js";
 import routes from "../routes/index.js";
 import bodyParser from "body-parser";
 import { mongoRateLimiter } from "../middlewares/rateLimiter.js";
 import { logHelper } from "../helpers/utilityHelper.js";
-import { GLOBAL_MESSAGES } from "../config/globalConfig.js";
+import { GLOBAL_MESSAGES, GLOBAL_ENV } from "../config/globalConfig.js";
 
 export default (app) => {
   process.on("uncaughtException", async (error) => {
@@ -44,7 +43,7 @@ export default (app) => {
   app.disable("etag");
 
   app.use(mongoRateLimiter);
-  app.use(prefix, routes);
+  app.use("/api", routes);
 
   app.get("/", (_req, res) => {
     return res.status(200).json(GLOBAL_MESSAGES.serverStatus).end();
@@ -72,16 +71,11 @@ export default (app) => {
 
   app.use((error, req, res, _next) => {
     res.status(error.status || 500);
-    let resError = GLOBAL_MESSAGES.serverError;
-    let level = "External Error";
-    if (error.status === 500) {
-      resError = GLOBAL_MESSAGES.serverError;
-      level = "Server Error";
-    } else if (error.status === 404) {
-      resError = GLOBAL_MESSAGES.clientError;
-      level = "Client Error";
-    }
-    logHelper(resError, "", level, req);
-    return res.json(resError);
+    let errorMessage = {
+      ...GLOBAL_MESSAGES.serverError,
+      resultMessage: error.message,
+    };
+    logHelper(errorMessage, "", "Server Error", req);
+    return res.json(errorMessage);
   });
 };

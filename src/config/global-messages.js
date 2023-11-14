@@ -98,8 +98,16 @@ export default {
     resultMessage: "Data already already exist.",
     resultCode: "00024",
   },
+  phoneNotFound: {
+    resultMessage: "Account with this phone number was not found.",
+    resultCode: "00025",
+  },
+  duplicatePhone: {
+    resultMessage: "An account with this phone number already exist.",
+    resultCode: "00026",
+  },
 
-  //major used.
+  //frequently used.
   createSuccess: {
     resultMessage: "Created Successfully.",
     resultCode: "00100",
